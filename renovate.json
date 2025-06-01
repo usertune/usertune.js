@@ -1,0 +1,95 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:base",
+    ":dependencyDashboard",
+    ":semanticCommits",
+    ":automergeMinor",
+    "npm:unpublishSafe"
+  ],
+  "schedule": ["before 6am on monday"],
+  "timezone": "UTC",
+  "labels": ["dependencies"],
+  "commitMessagePrefix": "chore:",
+  "prHourlyLimit": 3,
+  "prConcurrentLimit": 10,
+  "rebaseWhen": "conflicted",
+  "packageRules": [
+    {
+      "groupName": "TypeScript and ESLint",
+      "matchPackageNames": [
+        "typescript",
+        "@typescript-eslint/eslint-plugin",
+        "@typescript-eslint/parser",
+        "eslint"
+      ],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "groupName": "Rollup plugins",
+      "matchPackagePatterns": ["^@rollup/"],
+      "matchPackageNames": ["rollup"],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "groupName": "Jest testing",
+      "matchPackageNames": [
+        "jest",
+        "@types/jest",
+        "ts-jest",
+        "jest-environment-jsdom"
+      ],
+      "schedule": ["before 6am on monday"]
+    },
+    {
+      "groupName": "Production dependencies",
+      "matchDepTypes": ["dependencies"],
+      "automerge": false,
+      "labels": ["dependencies", "production"],
+      "reviewersFromCodeOwners": true
+    },
+    {
+      "groupName": "Development dependencies - patch updates",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true,
+      "labels": ["dependencies", "automerge"]
+    },
+    {
+      "groupName": "Development dependencies - minor updates",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["minor"],
+      "automerge": true,
+      "labels": ["dependencies", "automerge"],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "groupName": "Development dependencies - major updates",
+      "matchDepTypes": ["devDependencies"],
+      "matchUpdateTypes": ["major"],
+      "automerge": false,
+      "labels": ["dependencies", "major-update"],
+      "reviewersFromCodeOwners": true
+    }
+  ],
+  "vulnerabilityAlerts": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["at any time"],
+    "labels": ["security", "automerge"]
+  },
+  "lockFileMaintenance": {
+    "enabled": true,
+    "automerge": true,
+    "schedule": ["before 6am on monday"],
+    "commitMessageAction": "Lock file maintenance"
+  },
+  "separateMinorPatch": true,
+  "rangeStrategy": "bump",
+  "ignoreDeps": [],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.local/**"
+  ]
+} 
