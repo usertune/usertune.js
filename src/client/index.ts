@@ -63,9 +63,12 @@ export class Usertune {
     }
 
     const filteredAttributes = this.filterAttributes(attributes);
-    const url = `/v1/workspace/${this.workspace}/${contentSlug}`;
+    const url = `/v1/workspace/${this.workspace}/${contentSlug}/`;
     
-    const response = await this.http.post<ContentResponse>(url, filteredAttributes);
+    // Use GET request with query parameters for attributes
+    const response = await this.http.get<ContentResponse>(url, {
+      params: filteredAttributes
+    });
     
     // Store variant_id for tracking
     this.currentVariantId = response.metadata.variant_id;
@@ -88,17 +91,18 @@ export class Usertune {
       throw new Error('No variant_id available. You must call content() first to get a variant_id before tracking.');
     }
 
-    const url = `/v1/workspace/${this.workspace}/track`;
-    const payload: any = {
+    const url = `/v1/workspace/${this.workspace}/track/`;
+    const params: any = {
       conversion_type: conversionType,
       variant_id: this.currentVariantId
     };
 
     if (conversionValue !== undefined) {
-      payload.conversion_value = conversionValue;
+      params.conversion_value = conversionValue;
     }
     
-    return await this.http.post<TrackingResponse>(url, payload);
+    // Use GET request with query parameters
+    return await this.http.get<TrackingResponse>(url, { params });
   }
 
   /**

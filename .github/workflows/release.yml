@@ -40,26 +40,6 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Run tests
-      run: npm test
-      
-    - name: Run linter
-      run: npm run lint
-      
-    - name: Run type checking
-      run: npm run typecheck
-      
-    - name: Build project
-      run: npm run build
-      
-    - name: Verify build output
-      run: |
-        test -f dist/usertune.js
-        test -f dist/usertune.esm.js
-        test -f dist/usertune.browser.js
-        test -f dist/usertune.browser.min.js
-        test -d dist/types
-      
     - name: Configure Git
       run: |
         git config --local user.email "action@github.com"
@@ -80,10 +60,30 @@ jobs:
         VERSION_NUMBER=${NEW_VERSION#v}
         echo "version=$VERSION_NUMBER" >> $GITHUB_OUTPUT
         echo "tag=$NEW_VERSION" >> $GITHUB_OUTPUT
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Run linter
+      run: npm run lint
+      
+    - name: Run type checking
+      run: npm run typecheck
+      
+    - name: Build project
+      run: npm run build
+      
+    - name: Verify build output
+      run: |
+        test -f dist/usertune.js
+        test -f dist/usertune.esm.js
+        test -f dist/usertune.browser.js
+        test -f dist/usertune.browser.min.js
+        test -d dist/types
         
     - name: Commit version bump
       run: |
-        git add package.json package-lock.json
+        git add package.json package-lock.json dist/
         git commit -m "chore: bump version to ${{ steps.version.outputs.tag }}"
         
     - name: Pull latest changes and push
