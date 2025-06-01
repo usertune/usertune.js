@@ -1,0 +1,125 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_type:
+        description: 'Version bump type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      release_notes:
+        description: 'Release notes (optional)'
+        required: false
+        type: string
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20.x'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run tests
+      run: npm test
+      
+    - name: Run linter
+      run: npm run lint
+      
+    - name: Run type checking
+      run: npm run typecheck
+      
+    - name: Build project
+      run: npm run build
+      
+    - name: Configure Git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        
+    - name: Bump version
+      id: version
+      run: |
+        # Get current version
+        CURRENT_VERSION=$(node -p "require('./package.json').version")
+        echo "Current version: $CURRENT_VERSION"
+        
+        # Bump version
+        NEW_VERSION=$(npm version ${{ github.event.inputs.version_type }} --no-git-tag-version)
+        echo "New version: $NEW_VERSION"
+        
+        # Remove 'v' prefix for output
+        VERSION_NUMBER=${NEW_VERSION#v}
+        echo "version=$VERSION_NUMBER" >> $GITHUB_OUTPUT
+        echo "tag=$NEW_VERSION" >> $GITHUB_OUTPUT
+        
+    - name: Commit version bump
+      run: |
+        git add package.json package-lock.json
+        git commit -m "chore: bump version to ${{ steps.version.outputs.tag }}"
+        
+    - name: Create and push tag
+      run: |
+        git tag ${{ steps.version.outputs.tag }}
+        git push origin main
+        git push origin ${{ steps.version.outputs.tag }}
+        
+    - name: Generate changelog
+      id: changelog
+      run: |
+        # Get commits since last tag
+        LAST_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+        
+        if [ -n "$LAST_TAG" ]; then
+          echo "## Changes since $LAST_TAG" > changelog.md
+          git log --pretty=format:"- %s (%h)" $LAST_TAG..HEAD >> changelog.md
+        else
+          echo "## Initial Release" > changelog.md
+          echo "- First release of usertune.js" >> changelog.md
+        fi
+        
+        # Add custom release notes if provided
+        if [ -n "${{ github.event.inputs.release_notes }}" ]; then
+          echo "" >> changelog.md
+          echo "## Release Notes" >> changelog.md
+          echo "${{ github.event.inputs.release_notes }}" >> changelog.md
+        fi
+        
+        # Read changelog into output
+        echo "changelog<<EOF" >> $GITHUB_OUTPUT
+        cat changelog.md >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+        
+    - name: Create package tarball
+      run: npm pack
+        
+    - name: Create GitHub Release
+      id: create_release
+      uses: softprops/action-gh-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.tag }}
+        name: Release ${{ steps.version.outputs.tag }}
+        body: ${{ steps.changelog.outputs.changelog }}
+        draft: false
+        prerelease: false
+        files: ./usertune.js-${{ steps.version.outputs.version }}.tgz 

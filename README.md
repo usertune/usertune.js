@@ -33,17 +33,13 @@ npm install usertune.js
 ```typescript
 import { Usertune } from 'usertune.js';
 
-// Initialize the client
+// For public content (no authentication required)
 const client = new Usertune({
-  workspace: 'your-workspace-id',
-  accessToken: 'your-access-token'
+  workspace: 'your-workspace-id'
 });
 
-// Get personalized content
-const content = await client.content('homepage-banner', {
-  user_tier: 'premium',
-  location: 'san-francisco'
-});
+const content = await client.content('public-banner');
+console.log(content.data);
 
 // Track conversions
 await client.track('purchase', 99.99);
@@ -59,7 +55,7 @@ const client = new Usertune(config: UsertuneConfig)
 
 **Config Options:**
 - `workspace` (required) - Your Usertune workspace identifier
-- `accessToken` (required) - Your API access token
+- `accessToken` (optional) - Your API access token (required only for private content)
 - `baseUrl` (optional) - API base URL (defaults to `https://api.usertune.io`)
 - `timeout` (optional) - Request timeout in milliseconds (defaults to `10000`)
 - `debug` (optional) - Enable debug logging (defaults to `false`)
@@ -130,9 +126,53 @@ console.log(content.data.title);
 
 // Later, when user converts...
 await track('signup');
+
+// For personalized content (authentication required)
+const privateClient = new Usertune({
+  workspace: 'your-workspace-id',
+  accessToken: 'your-access-token'
+});
+
+// Get personalized content
+const content = await privateClient.content('homepage-banner', {
+  user_tier: 'premium',
+  location: 'san-francisco'
+});
+
 ```
 
 ## 🎨 Usage Examples
+
+### Public Content Access (No Authentication Required)
+
+```typescript
+import { Usertune } from 'usertune.js';
+
+// For public content, no accessToken needed
+const client = new Usertune({
+  workspace: 'my-workspace'
+});
+
+const content = await client.content('public-banner');
+console.log(content.data);
+```
+
+### Private Content Access (Authentication Required)
+
+```typescript
+import { Usertune } from 'usertune.js';
+
+// For private/personalized content, accessToken is required
+const client = new Usertune({
+  workspace: 'my-workspace',
+  accessToken: 'your-access-token'
+});
+
+const content = await client.content('personalized-banner', {
+  user_tier: 'premium'
+});
+console.log(content.data);
+```
 
 ### Basic Content Retrieval
 

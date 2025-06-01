@@ -50,19 +50,21 @@ describe('Usertune', () => {
 
   describe('constructor', () => {
     it('should throw error if workspace is missing', () => {
-      expect(() => new Usertune({ workspace: '', accessToken: 'token' }))
+      expect(() => new Usertune({ workspace: '' }))
         .toThrow('Workspace is required');
     });
 
-    it('should throw error if accessToken is missing', () => {
-      expect(() => new Usertune({ workspace: 'workspace', accessToken: '' }))
-        .toThrow('Access token is required');
-    });
-
-    it('should create client with valid config', () => {
+    it('should create client with valid config (with accessToken)', () => {
       const client = new Usertune({
         workspace: 'test-workspace',
         accessToken: 'test-token'
+      });
+      expect(client).toBeInstanceOf(Usertune);
+    });
+
+    it('should create client without accessToken for public content', () => {
+      const client = new Usertune({
+        workspace: 'test-workspace'
       });
       expect(client).toBeInstanceOf(Usertune);
     });
@@ -138,6 +140,41 @@ describe('Usertune', () => {
 
     it('should throw error for empty content slug', async () => {
       await expect(client.content('')).rejects.toThrow('Content slug is required');
+    });
+
+    it('should work without accessToken for public content', async () => {
+      // Create a client without accessToken
+      const publicClient = new Usertune({
+        workspace: 'test-workspace'
+      });
+      
+      // Replace with mock HTTP client
+      const publicMockHttp = new MockHttpClient();
+      (publicClient as any).http = publicMockHttp;
+      
+      // Set up mock response
+      const publicContentResponse: ContentResponse = {
+        data: {
+          title: 'Public Content',
+          content: 'This is publicly accessible content'
+        },
+        metadata: {
+          variant_id: null, // Public content typically has no variant
+          timestamp: '2023-01-01T00:00:00Z'
+        }
+      };
+      
+      publicMockHttp.setResponse('POST:/v1/workspace/test-workspace/public-slug', publicContentResponse);
+      
+      const result = await publicClient.content('public-slug');
+      
+      expect(result).toEqual(publicContentResponse);
+      expect(publicMockHttp.requests).toHaveLength(1);
+      expect(publicMockHttp.requests[0]).toEqual({
+        method: 'POST',
+        url: '/v1/workspace/test-workspace/public-slug',
+        data: {}
+      });
     });
   });
 

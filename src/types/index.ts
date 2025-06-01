@@ -4,8 +4,8 @@
 export interface UsertuneConfig {
   /** The workspace identifier */
   workspace: string;
-  /** Access token for authentication */
-  accessToken: string;
+  /** Access token for authentication (optional, required only for private content) */
+  accessToken?: string;
   /** Base URL for the API (optional, defaults to https://api.usertune.io) */
   baseUrl?: string;
   /** Request timeout in milliseconds (optional, defaults to 10000) */

@@ -23,17 +23,13 @@ export class Usertune {
     if (!config.workspace) {
       throw new Error('Workspace is required');
     }
-    
-    if (!config.accessToken) {
-      throw new Error('Access token is required');
-    }
 
     // Initialize HTTP client
     this.http = new AxiosHttpClient({
       baseUrl: config.baseUrl,
       timeout: config.timeout,
       debug: config.debug,
-      accessToken: config.accessToken
+      accessToken: config.accessToken // Pass even if undefined, HTTP client will handle it
     });
   }
 
