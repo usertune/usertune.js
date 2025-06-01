@@ -1,5 +1,5 @@
 import { Usertune } from './index.js';
-import { HttpClient, ContentResponse, TrackingResponse } from '../types/index.js';
+import { HttpClient, TrackingResponse } from '../types/index.js';
 
 // Mock HTTP client for testing
 class MockHttpClient implements HttpClient {
