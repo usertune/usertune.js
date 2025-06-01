@@ -45,6 +45,26 @@ console.log(content.data);
 await client.track('purchase', 99.99);
 ```
 
+### CDN Usage (Browser)
+
+You can also use usertune.js directly in the browser via CDN:
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/usertune.js@latest/dist/usertune.browser.min.js"></script>
+<script>
+  const client = new Usertune({
+    workspace: 'your-workspace-id'
+  });
+  
+  client.content('banner-content').then(content => {
+    console.log(content.data);
+  });
+</script>
+```
+
+See [CDN.md](CDN.md) for complete examples and usage patterns.
+
+
 ## 📚 API Reference
 
 ### Constructor

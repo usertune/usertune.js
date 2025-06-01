@@ -18,6 +18,17 @@ const plugins = [
   })
 ];
 
+const browserPlugins = [
+  resolve({
+    preferBuiltins: false,
+    browser: true
+  }),
+  commonjs(),
+  typescript({
+    tsconfig: './tsconfig.json'
+  })
+];
+
 export default [
   // Node.js/ES Module build
   {
@@ -44,7 +55,7 @@ export default [
     plugins
   },
   
-  // Browser build (with dependencies bundled and minified)
+  // Browser build (unminified, with axios bundled)
   {
     input: 'src/index.ts',
     output: {
@@ -52,14 +63,63 @@ export default [
       format: 'umd',
       name: 'Usertune',
       sourcemap: true,
+      exports: 'named',
       globals: {
-        axios: 'axios'
+        'usertune.js': 'Usertune'
       }
     },
-    external: ['axios'],
     plugins: [
-      ...plugins,
-      terser()
+      ...browserPlugins,
+      {
+        name: 'expose-usertune-class',
+        generateBundle(options, bundle) {
+          const chunk = bundle['usertune.browser.js'];
+          if (chunk && chunk.type === 'chunk') {
+            // Modify the UMD wrapper to expose Usertune class directly
+            chunk.code = chunk.code.replace(
+              /global\.Usertune = factory\(\);/,
+              'global.Usertune = factory().Usertune;'
+            );
+          }
+        }
+      }
+    ]
+  },
+
+  // Browser build (minified, with axios bundled)
+  {
+    input: 'src/index.ts',
+    output: {
+      file: 'dist/usertune.browser.min.js',
+      format: 'umd',
+      name: 'Usertune',
+      sourcemap: true,
+      exports: 'named',
+      globals: {
+        'usertune.js': 'Usertune'
+      }
+    },
+    plugins: [
+      ...browserPlugins,
+      {
+        name: 'expose-usertune-class',
+        generateBundle(options, bundle) {
+          const chunk = bundle['usertune.browser.min.js'];
+          if (chunk && chunk.type === 'chunk') {
+            // Modify the UMD wrapper to expose Usertune class directly
+            chunk.code = chunk.code.replace(
+              /global\.Usertune = factory\(\);/,
+              'global.Usertune = factory().Usertune;'
+            );
+          }
+        }
+      },
+      terser({
+        compress: {
+          drop_console: true
+        },
+        mangle: true
+      })
     ]
   }
 ]; 
