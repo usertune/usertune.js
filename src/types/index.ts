@@ -26,30 +26,23 @@ export interface ContentAttributes {
  * Response structure for content retrieval
  */
 export interface ContentResponse {
-  /** The actual content data */
+  /** The actual content data - structure varies based on content type */
   data: {
-    /** Content title */
-    title?: string;
-    /** Content body/text */
-    content?: string;
-    /** Image URL */
-    image_url?: string;
-    /** Call-to-action text */
-    cta_text?: string;
-    /** Call-to-action URL */
-    cta_url?: string;
-    /** Additional content properties */
     [key: string]: any;
   };
   /** Metadata about the response */
   metadata: {
+    /** Content identifier */
+    content_id: number;
     /** Unique identifier for the variant (null if no personalization) */
-    variant_id: string | null;
-    /** Timestamp when content was generated */
-    timestamp: string;
+    variant_id: number | null;
+    /** Workspace identifier */
+    workspace_id: number;
     /** Additional metadata */
     [key: string]: any;
   };
+  /** Method to track conversions for this specific content */
+  track: (conversionType: string, conversionValue?: number) => Promise<TrackingResponse>;
 }
 
 /**

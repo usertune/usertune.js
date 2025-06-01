@@ -14,7 +14,6 @@ import { AxiosHttpClient } from '../http/index.js';
 export class Usertune {
   private http: HttpClient;
   private workspace: string;
-  private currentVariantId: string | null = null;
 
   constructor(config: UsertuneConfig) {
     this.workspace = config.workspace;
@@ -55,7 +54,7 @@ export class Usertune {
    * Retrieve personalized content
    * @param contentSlug - The content slug identifier
    * @param attributes - Optional custom attributes for personalization
-   * @returns Promise resolving to content response
+   * @returns Promise resolving to content response with attached track method
    */
   async content(contentSlug: string, attributes?: ContentAttributes): Promise<ContentResponse> {
     if (!contentSlug) {
@@ -66,43 +65,39 @@ export class Usertune {
     const url = `/v1/workspace/${this.workspace}/${contentSlug}/`;
     
     // Use GET request with query parameters for attributes
-    const response = await this.http.get<ContentResponse>(url, {
+    const response = await this.http.get<Omit<ContentResponse, 'track'>>(url, {
       params: filteredAttributes
     });
     
-    // Store variant_id for tracking
-    this.currentVariantId = response.metadata.variant_id;
-    
-    return response;
-  }
+    // Create bound track method for this specific content
+    const track = async (conversionType: string, conversionValue?: number): Promise<TrackingResponse> => {
+      if (!conversionType) {
+        throw new Error('Conversion type is required');
+      }
 
-  /**
-   * Track a conversion
-   * @param conversionType - Type of conversion (e.g., 'purchase', 'signup')
-   * @param conversionValue - Optional monetary value
-   * @returns Promise resolving to tracking response
-   */
-  async track(conversionType: string, conversionValue?: number): Promise<TrackingResponse> {
-    if (!conversionType) {
-      throw new Error('Conversion type is required');
-    }
+      if (!response.metadata.variant_id) {
+        throw new Error('No variant_id available. Cannot track conversions for content without variants.');
+      }
 
-    if (!this.currentVariantId) {
-      throw new Error('No variant_id available. You must call content() first to get a variant_id before tracking.');
-    }
+      const trackUrl = `/v1/workspace/${this.workspace}/${contentSlug}/track/`;
+      const params: any = {
+        conversion_type: conversionType,
+        variant_id: response.metadata.variant_id
+      };
 
-    const url = `/v1/workspace/${this.workspace}/track/`;
-    const params: any = {
-      conversion_type: conversionType,
-      variant_id: this.currentVariantId
+      if (conversionValue !== undefined) {
+        params.conversion_value = conversionValue;
+      }
+      
+      // Use GET request with query parameters
+      return await this.http.get<TrackingResponse>(trackUrl, { params });
     };
-
-    if (conversionValue !== undefined) {
-      params.conversion_value = conversionValue;
-    }
     
-    // Use GET request with query parameters
-    return await this.http.get<TrackingResponse>(url, { params });
+    // Return content response with attached track method
+    return {
+      ...response,
+      track
+    };
   }
 
   /**
@@ -110,15 +105,15 @@ export class Usertune {
    * @param contentSlug - The content slug identifier  
    * @param attributes - Optional custom attributes for personalization
    * @returns Promise resolving to content and track function
+   * @deprecated Use content() directly - the returned object now includes a track method
    */
   async contentWithTracker(contentSlug: string, attributes?: ContentAttributes): Promise<ContentWithTracker> {
     const content = await this.content(contentSlug, attributes);
     
-    const track = async (conversionType: string, conversionValue?: number): Promise<TrackingResponse> => {
-      return await this.track(conversionType, conversionValue);
+    return { 
+      content, 
+      track: content.track 
     };
-
-    return { content, track };
   }
 }
 
