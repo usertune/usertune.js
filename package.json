@@ -1,6 +1,6 @@
 {
   "name": "usertune.js",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "JavaScript library for Usertune's API (node & browser)",
   "type": "module",
   "main": "dist/usertune.js",
