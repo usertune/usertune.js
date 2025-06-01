@@ -83,7 +83,7 @@ jobs:
         
     - name: Commit version bump
       run: |
-        git add package.json package-lock.json dist/
+        git add package.json package-lock.json
         git commit -m "chore: bump version to ${{ steps.version.outputs.tag }}"
         
     - name: Pull latest changes and push
