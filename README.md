@@ -6,7 +6,7 @@
   <h3>JavaScript library for Usertune's API</h3>
   <p>Modern, type-safe client for Node.js & Browser</p>
 
-  [![CI Status](https://github.com/yourusername/usertune.js/workflows/CI/badge.svg)](https://github.com/yourusername/usertune.js/actions)
+  [![CI Status](https://github.com/usertune/usertune.js/workflows/CI/badge.svg)](https://github.com/usertune/usertune.js/actions)
   [![npm version](https://badge.fury.io/js/usertune.js.svg)](https://badge.fury.io/js/usertune.js)
   [![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue.svg)](https://www.typescriptlang.org/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
