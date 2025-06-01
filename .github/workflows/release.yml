@@ -78,9 +78,15 @@ jobs:
         git add package.json package-lock.json
         git commit -m "chore: bump version to ${{ steps.version.outputs.tag }}"
         
-    - name: Create and push tag
+    - name: Pull latest changes and push
       run: |
+        # Pull latest changes from remote to avoid conflicts
+        git pull origin main --rebase
+        
+        # Create tag
         git tag ${{ steps.version.outputs.tag }}
+        
+        # Push changes and tag
         git push origin main
         git push origin ${{ steps.version.outputs.tag }}
         
