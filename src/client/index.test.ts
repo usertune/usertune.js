@@ -84,7 +84,7 @@ describe('Usertune', () => {
     };
 
     beforeEach(() => {
-      mockHttp.setResponse('POST:/v1/workspace/test-workspace/test-slug', mockContentResponse);
+      mockHttp.setResponse('GET:/v1/workspace/test-workspace/test-slug/', mockContentResponse);
     });
 
     it('should retrieve content without attributes', async () => {
@@ -93,9 +93,9 @@ describe('Usertune', () => {
       expect(result).toEqual(mockContentResponse);
       expect(mockHttp.requests).toHaveLength(1);
       expect(mockHttp.requests[0]).toEqual({
-        method: 'POST',
-        url: '/v1/workspace/test-workspace/test-slug',
-        data: {}
+        method: 'GET',
+        url: '/v1/workspace/test-workspace/test-slug/',
+        config: { params: {} }
       });
     });
 
@@ -110,7 +110,7 @@ describe('Usertune', () => {
       const result = await client.content('test-slug', attributes);
 
       expect(result).toEqual(mockContentResponse);
-      expect(mockHttp.requests[0].data).toEqual(attributes);
+      expect(mockHttp.requests[0].config.params).toEqual(attributes);
     });
 
     it('should filter out unsupported attribute types', async () => {
@@ -126,7 +126,7 @@ describe('Usertune', () => {
 
       await client.content('test-slug', attributes);
 
-      expect(mockHttp.requests[0].data).toEqual({
+      expect(mockHttp.requests[0].config.params).toEqual({
         valid_string: 'test',
         valid_number: 42,
         valid_boolean: true
@@ -164,16 +164,16 @@ describe('Usertune', () => {
         }
       };
       
-      publicMockHttp.setResponse('POST:/v1/workspace/test-workspace/public-slug', publicContentResponse);
+      publicMockHttp.setResponse('GET:/v1/workspace/test-workspace/public-slug/', publicContentResponse);
       
       const result = await publicClient.content('public-slug');
       
       expect(result).toEqual(publicContentResponse);
       expect(publicMockHttp.requests).toHaveLength(1);
       expect(publicMockHttp.requests[0]).toEqual({
-        method: 'POST',
-        url: '/v1/workspace/test-workspace/public-slug',
-        data: {}
+        method: 'GET',
+        url: '/v1/workspace/test-workspace/public-slug/',
+        config: { params: {} }
       });
     });
   });
@@ -185,7 +185,7 @@ describe('Usertune', () => {
     };
 
     beforeEach(() => {
-      mockHttp.setResponse('POST:/v1/workspace/test-workspace/track', mockTrackingResponse);
+      mockHttp.setResponse('GET:/v1/workspace/test-workspace/track/', mockTrackingResponse);
       // Set up variant_id by calling content first
       (client as any).currentVariantId = 'variant-123';
     });
@@ -196,11 +196,13 @@ describe('Usertune', () => {
       expect(result).toEqual(mockTrackingResponse);
       expect(mockHttp.requests).toHaveLength(1);
       expect(mockHttp.requests[0]).toEqual({
-        method: 'POST',
-        url: '/v1/workspace/test-workspace/track',
-        data: {
-          conversion_type: 'purchase',
-          variant_id: 'variant-123'
+        method: 'GET',
+        url: '/v1/workspace/test-workspace/track/',
+        config: {
+          params: {
+            conversion_type: 'purchase',
+            variant_id: 'variant-123'
+          }
         }
       });
     });
@@ -209,7 +211,7 @@ describe('Usertune', () => {
       const result = await client.track('purchase', 99.99);
 
       expect(result).toEqual(mockTrackingResponse);
-      expect(mockHttp.requests[0].data).toEqual({
+      expect(mockHttp.requests[0].config.params).toEqual({
         conversion_type: 'purchase',
         conversion_value: 99.99,
         variant_id: 'variant-123'
@@ -241,8 +243,8 @@ describe('Usertune', () => {
     };
 
     beforeEach(() => {
-      mockHttp.setResponse('POST:/v1/workspace/test-workspace/test-slug', mockContentResponse);
-      mockHttp.setResponse('POST:/v1/workspace/test-workspace/track', mockTrackingResponse);
+      mockHttp.setResponse('GET:/v1/workspace/test-workspace/test-slug/', mockContentResponse);
+      mockHttp.setResponse('GET:/v1/workspace/test-workspace/track/', mockTrackingResponse);
     });
 
     it('should return content and track function', async () => {
@@ -259,7 +261,7 @@ describe('Usertune', () => {
       
       expect(trackResult).toEqual(mockTrackingResponse);
       expect(mockHttp.requests).toHaveLength(2); // content + track
-      expect(mockHttp.requests[1].data).toEqual({
+      expect(mockHttp.requests[1].config.params).toEqual({
         conversion_type: 'click',
         variant_id: 'variant-123'
       });
@@ -270,8 +272,8 @@ describe('Usertune', () => {
       
       await track('purchase', 150.00);
       
-      expect(mockHttp.requests[0].data).toEqual({ user_id: 'test' });
-      expect(mockHttp.requests[1].data).toEqual({
+      expect(mockHttp.requests[0].config.params).toEqual({ user_id: 'test' });
+      expect(mockHttp.requests[1].config.params).toEqual({
         conversion_type: 'purchase',
         conversion_value: 150.00,
         variant_id: 'variant-123'
@@ -290,23 +292,23 @@ describe('Usertune', () => {
         success: true
       };
 
-      mockHttp.setResponse('POST:/v1/workspace/test-workspace/banner', contentResponse);
-      mockHttp.setResponse('POST:/v1/workspace/test-workspace/track', trackingResponse);
+      mockHttp.setResponse('GET:/v1/workspace/test-workspace/banner/', contentResponse);
+      mockHttp.setResponse('GET:/v1/workspace/test-workspace/track/', trackingResponse);
 
       // Get content
       const content = await client.content('banner', { user_tier: 'premium' });
       expect(content).toEqual(contentResponse);
 
       // Track conversion
-      const trackResult = await client.track('signup', 0);
+      const trackResult = await client.track('signup', 50);
       expect(trackResult).toEqual(trackingResponse);
 
       // Verify requests
       expect(mockHttp.requests).toHaveLength(2);
-      expect(mockHttp.requests[0].data).toEqual({ user_tier: 'premium' });
-      expect(mockHttp.requests[1].data).toEqual({
+      expect(mockHttp.requests[0].config.params).toEqual({ user_tier: 'premium' });
+      expect(mockHttp.requests[1].config.params).toEqual({
         conversion_type: 'signup',
-        conversion_value: 0,
+        conversion_value: 50,
         variant_id: 'variant-123'
       });
     });
@@ -317,7 +319,7 @@ describe('Usertune', () => {
         metadata: { variant_id: null, timestamp: '2023-01-01T00:00:00Z' }
       };
 
-      mockHttp.setResponse('POST:/v1/workspace/test-workspace/static', contentResponse);
+      mockHttp.setResponse('GET:/v1/workspace/test-workspace/static/', contentResponse);
 
       const content = await client.content('static');
       expect(content.metadata.variant_id).toBeNull();
