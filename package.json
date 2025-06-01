@@ -1,12 +1,21 @@
 {
   "name": "usertune.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "JavaScript library for Usertune's API (node & browser)",
   "type": "module",
   "main": "dist/usertune.js",
   "module": "dist/usertune.esm.js",
   "browser": "dist/usertune.browser.js",
   "types": "dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/usertune.esm.js",
+      "require": "./dist/usertune.js",
+      "browser": "./dist/usertune.browser.js",
+      "types": "./dist/types/index.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
   "files": [
     "dist",
     "README.md",
