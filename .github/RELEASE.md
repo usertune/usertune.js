@@ -42,9 +42,8 @@ The workflow will:
 3. **Build Project**: Verifies the build works
 4. **Bump Version**: Updates `package.json` with new version
 5. **Create Git Tag**: Tags the commit with the new version
-6. **Generate Changelog**: Creates changelog from recent commits
-7. **Create GitHub Release**: Publishes the release on GitHub
-8. **Trigger NPM Publish**: The release creation triggers the main CI/CD workflow which publishes to NPM
+6. **Trigger NPM Publish**: Tag creation immediately triggers NPM publishing
+7. **Create GitHub Release**: Publishes the release on GitHub with changelog
 
 ## Version Bump Types
 
@@ -93,8 +92,8 @@ Release notes: "BREAKING: Removed deprecated UsertuneClient alias. Use Usertune 
 
 1. **Manual Trigger** → Workflow starts
 2. **~2-3 minutes** → Tests, build, and version bump complete
-3. **~30 seconds** → GitHub release created
-4. **~2-3 minutes** → NPM publish completes (via main workflow)
+3. **~30 seconds** → Git tag created, NPM publish starts
+4. **~2-3 minutes** → NPM publish completes, GitHub release created
 5. **Total: ~5-6 minutes** → Package available on NPM
 
 ## Monitoring the Release

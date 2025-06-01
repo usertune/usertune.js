@@ -80,5 +80,5 @@ graph TD
 - **🚀 Fast CI**: CI runs quickly without publish overhead
 - **📦 Reliable Publishing**: Dedicated publish workflow with safety checks
 - **🎯 Manual Control**: You choose when to release
-- **🔄 Automatic NPM**: Publishing happens automatically after release creation
-- **🛡️ Safety**: Multiple test runs before publishing 
+- **⚡ Fast Publishing**: NPM publish triggers immediately on tag creation
+- **🛡️ Safety**: Multiple test gates before publishing 
