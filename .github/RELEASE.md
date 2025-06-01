@@ -8,9 +8,11 @@ The manual release workflow allows you to:
 - Choose the version bump type (patch, minor, or major)
 - Automatically update `package.json` with the new version
 - Create a git tag for the release
+- Publish directly to NPM
 - Generate a changelog from recent commits
 - Create a GitHub release with release assets
-- Trigger automatic NPM publishing (via the main CI/CD workflow)
+
+All in a single workflow execution.
 
 ## How to Use
 
@@ -42,8 +44,8 @@ The workflow will:
 3. **Build Project**: Verifies the build works
 4. **Bump Version**: Updates `package.json` with new version
 5. **Create Git Tag**: Tags the commit with the new version
-6. **Trigger NPM Publish**: Tag creation immediately triggers NPM publishing
-7. **Create GitHub Release**: Publishes the release on GitHub with changelog
+6. **Publish to NPM**: Immediately publishes the package to NPM
+7. **Create GitHub Release**: Publishes the release on GitHub with changelog and package assets
 
 ## Version Bump Types
 
@@ -92,19 +94,23 @@ Release notes: "BREAKING: Removed deprecated UsertuneClient alias. Use Usertune 
 
 1. **Manual Trigger** → Workflow starts
 2. **~2-3 minutes** → Tests, build, and version bump complete
-3. **~30 seconds** → Git tag created, NPM publish starts
-4. **~2-3 minutes** → NPM publish completes, GitHub release created
-5. **Total: ~5-6 minutes** → Package available on NPM
+3. **~1-2 minutes** → Git tag created, NPM publish completes
+4. **~30 seconds** → GitHub release created with assets
+5. **Total: ~4-5 minutes** → Package available on NPM and GitHub
 
 ## Monitoring the Release
+
+### Single Workflow
+- Monitor the "Release & Publish" workflow in Actions tab
+- All steps (testing, versioning, NPM publish, GitHub release) happen in one workflow
 
 ### GitHub Release
 - Check the [Releases page](https://github.com/usertune/usertune.js/releases)
 - Verify the release was created with correct version and notes
 
-### NPM Publish
-- Monitor the "CI/CD" workflow in Actions tab
+### NPM Package
 - Check [npmjs.com/package/usertune.js](https://npmjs.com/package/usertune.js) for the new version
+- Package should be available immediately after workflow completes
 
 ### Rollback if Needed
 If something goes wrong:
