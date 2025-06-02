@@ -7,7 +7,6 @@ export type {
   ContentAttributes,
   ContentResponse,
   TrackingResponse,
-  ContentWithTracker,
   TrackingOptions,
   HttpClient,
   ApiError

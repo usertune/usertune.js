@@ -218,62 +218,6 @@ describe('Usertune', () => {
     });
   });
 
-  describe('contentWithTracker()', () => {
-    const mockContentResponse = {
-      data: { title: 'Test Content' },
-      metadata: { 
-        content_id: 1,
-        variant_id: 1, 
-        workspace_id: 1 
-      }
-    };
-
-    const mockTrackingResponse: TrackingResponse = {
-      success: true,
-      message: 'Conversion tracked successfully'
-    };
-
-    beforeEach(() => {
-      mockHttp.setResponse('GET:/v1/workspace/test-workspace/test-slug/', mockContentResponse);
-      mockHttp.setResponse('GET:/v1/workspace/test-workspace/test-slug/track/', mockTrackingResponse);
-    });
-
-    it('should return content and track function', async () => {
-      const result = await client.contentWithTracker('test-slug');
-
-      expect(result.content.data).toEqual(mockContentResponse.data);
-      expect(result.content.metadata).toEqual(mockContentResponse.metadata);
-      expect(typeof result.track).toBe('function');
-      expect(typeof result.content.track).toBe('function');
-    });
-
-    it('should allow tracking via returned function', async () => {
-      const { track } = await client.contentWithTracker('test-slug');
-      
-      const trackResult = await track('click');
-      
-      expect(trackResult).toEqual(mockTrackingResponse);
-      expect(mockHttp.requests).toHaveLength(2); // content + track
-      expect(mockHttp.requests[1].config.params).toEqual({
-        conversion_type: 'click',
-        variant_id: 1
-      });
-    });
-
-    it('should work with attributes and conversion value', async () => {
-      const { track } = await client.contentWithTracker('test-slug', { user_id: 'test' });
-      
-      await track('purchase', 150.00);
-      
-      expect(mockHttp.requests[0].config.params).toEqual({ user_id: 'test' });
-      expect(mockHttp.requests[1].config.params).toEqual({
-        conversion_type: 'purchase',
-        conversion_value: 150.00,
-        variant_id: 1
-      });
-    });
-  });
-
   describe('integration scenarios', () => {
     it('should handle complete flow: content -> track', async () => {
       const contentResponse = {

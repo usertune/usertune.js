@@ -76,7 +76,6 @@ const client = new Usertune(config: UsertuneConfig)
 **Config Options:**
 - `workspace` (required) - Your Usertune workspace identifier
 - `accessToken` (optional) - Your API access token (required only for private content)
-- `baseUrl` (optional) - API base URL (defaults to `https://api.usertune.io`)
 - `timeout` (optional) - Request timeout in milliseconds (defaults to `10000`)
 - `debug` (optional) - Enable debug logging (defaults to `false`)
 
@@ -127,20 +126,6 @@ await client.track('signup'); // Value is optional
 - `conversionType` (string) - Type of conversion (e.g., 'purchase', 'signup', 'click')
 - `conversionValue` (number, optional) - Monetary value of the conversion
 
-#### `contentWithTracker(contentSlug, attributes?)`
-
-Convenience method that returns both content and a bound tracking function.
-
-```typescript
-const { content, track } = await client.contentWithTracker('popup-offer', {
-  user_id: 'user-123'
-});
-
-console.log(content.data.title);
-
-// Later, when user converts...
-await track('signup');
-
 // For personalized content (authentication required)
 const privateClient = new Usertune({
   workspace: 'your-workspace-id',
@@ -152,8 +137,6 @@ const content = await privateClient.content('homepage-banner', {
   user_tier: 'premium',
   location: 'san-francisco'
 });
-
-```
 
 ## 🎨 Usage Examples
 
@@ -227,24 +210,8 @@ displayBanner(content.data);
 
 // Track conversion when user completes purchase
 if (userCompletedPurchase) {
-  await client.track('purchase', 150.00);
+  await content.track('purchase', 150.00);
 }
-```
-
-### Using contentWithTracker for Convenience
-
-```typescript
-const { content, track } = await client.contentWithTracker('email-signup-form', {
-  traffic_source: 'google',
-  page_type: 'landing'
-});
-
-// Display the form
-showSignupForm(content.data);
-
-// Track different conversion events
-document.getElementById('signup-btn').onclick = () => track('signup');
-document.getElementById('newsletter-btn').onclick = () => track('newsletter_signup');
 ```
 
 ### Error Handling

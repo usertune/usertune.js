@@ -3,7 +3,6 @@ import {
   ContentAttributes, 
   ContentResponse, 
   TrackingResponse, 
-  ContentWithTracker,
   HttpClient 
 } from '../types/index.js';
 import { AxiosHttpClient } from '../http/index.js';
@@ -25,7 +24,6 @@ export class Usertune {
 
     // Initialize HTTP client
     this.http = new AxiosHttpClient({
-      baseUrl: config.baseUrl,
       timeout: config.timeout,
       debug: config.debug,
       accessToken: config.accessToken // Pass even if undefined, HTTP client will handle it
@@ -97,22 +95,6 @@ export class Usertune {
     return {
       ...response,
       track
-    };
-  }
-
-  /**
-   * Get content and return both content and a tracking function
-   * @param contentSlug - The content slug identifier  
-   * @param attributes - Optional custom attributes for personalization
-   * @returns Promise resolving to content and track function
-   * @deprecated Use content() directly - the returned object now includes a track method
-   */
-  async contentWithTracker(contentSlug: string, attributes?: ContentAttributes): Promise<ContentWithTracker> {
-    const content = await this.content(contentSlug, attributes);
-    
-    return { 
-      content, 
-      track: content.track 
     };
   }
 }

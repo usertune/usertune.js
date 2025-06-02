@@ -8,13 +8,12 @@ export class AxiosHttpClient implements HttpClient {
   private client: AxiosInstance;
 
   constructor(config: {
-    baseUrl?: string;
     timeout?: number;
     debug?: boolean;
     accessToken?: string;
   }) {
     this.client = axios.create({
-      baseURL: config.baseUrl || 'https://api.usertune.io',
+      baseURL: 'https://api.usertune.io',
       timeout: config.timeout || 10000,
       headers: {
         'Content-Type': 'application/json',

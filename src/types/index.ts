@@ -6,8 +6,6 @@ export interface UsertuneConfig {
   workspace: string;
   /** Access token for authentication (optional, required only for private content) */
   accessToken?: string;
-  /** Base URL for the API (optional, defaults to https://api.usertune.io) */
-  baseUrl?: string;
   /** Request timeout in milliseconds (optional, defaults to 10000) */
   timeout?: number;
   /** Enable debug logging (optional, defaults to false) */
@@ -65,16 +63,6 @@ export interface TrackingResponse {
   message?: string;
   /** Additional response data */
   [key: string]: any;
-}
-
-/**
- * Return type for contentWithTracker method
- */
-export interface ContentWithTracker {
-  /** The content response */
-  content: ContentResponse;
-  /** Function to track conversions for this content */
-  track: (conversionType: string, conversionValue?: number) => Promise<TrackingResponse>;
 }
 
 /**
