@@ -3,42 +3,27 @@
   "extends": [
     "config:base"
   ],
-  "schedule": ["before 6am on monday"],
-  "timezone": "UTC",
-  "labels": ["dependencies"],
-  "commitMessagePrefix": "chore:",
-  "prHourlyLimit": 3,
-  "prConcurrentLimit": 10,
-  "rebaseWhen": "conflicted",
-  "packageRules": [
-    {
-      "matchDepTypes": ["devDependencies"],
-      "matchUpdateTypes": ["patch", "minor"],
-      "automerge": true
-    },
-    {
-      "matchDepTypes": ["dependencies"],
-      "automerge": false
-    }
-  ],
-  "vulnerabilityAlerts": {
-    "enabled": true,
-    "automerge": true,
-    "schedule": ["at any time"],
-    "labels": ["security", "automerge"]
-  },
   "lockFileMaintenance": {
     "enabled": true,
-    "automerge": true,
-    "schedule": ["before 6am on monday"],
-    "commitMessageAction": "Lock file maintenance"
+    "automerge": true
   },
-  "separateMinorPatch": true,
-  "rangeStrategy": "bump",
-  "ignoreDeps": [],
-  "ignorePaths": [
-    "**/node_modules/**",
-    "**/dist/**",
-    "**/.local/**"
+  "platformAutomerge": true,
+  "packageRules": [
+    {
+      "enabled": true,
+      "automerge": true,
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ]
+    },
+    {
+      "enabled": true,
+      "automerge": false,
+      "matchUpdateTypes": [
+        "major"
+      ]
+    }
   ]
-} 
+}
