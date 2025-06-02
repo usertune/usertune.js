@@ -105,16 +105,10 @@ console.log(content.metadata.variant_id);
 ```typescript
 {
   data: {
-    title?: string;
-    content?: string;
-    image_url?: string;
-    cta_text?: string;
-    cta_url?: string;
     [key: string]: any;
   };
   metadata: {
     variant_id: string | null;
-    timestamp: string;
     [key: string]: any;
   };
 }

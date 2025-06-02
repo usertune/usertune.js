@@ -77,7 +77,7 @@ export default [
           if (chunk && chunk.type === 'chunk') {
             // Modify the UMD wrapper to expose Usertune class directly
             chunk.code = chunk.code.replace(
-              /factory\(global\.Usertune = \{\}\)/,
+              /global\.Usertune = \{\}/,
               'global.Usertune = factory().Usertune'
             );
           }
@@ -108,8 +108,8 @@ export default [
           if (chunk && chunk.type === 'chunk') {
             // Modify the UMD wrapper to expose Usertune class directly
             chunk.code = chunk.code.replace(
-              /factory\(global\.Usertune = \{\}\)/,
-              'global.Usertune = factory().Usertune'
+              /\.Usertune=\{\}/,
+              '.Usertune=factory().Usertune'
             );
           }
         }
