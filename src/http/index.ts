@@ -18,7 +18,6 @@ export class AxiosHttpClient implements HttpClient {
       timeout: config.timeout || 10000,
       headers: {
         'Content-Type': 'application/json',
-        'User-Agent': 'usertune.js/1.0.0',
         ...(config.accessToken && { 'Authorization': `Bearer ${config.accessToken}` })
       }
     });
