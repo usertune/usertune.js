@@ -57,63 +57,35 @@ export default [
   
   // Browser build (unminified, with axios bundled)
   {
-    input: 'src/index.ts',
+    input: 'src/browser.ts',
     output: {
       file: 'dist/usertune.browser.js',
       format: 'umd',
       name: 'Usertune',
       sourcemap: true,
-      exports: 'named',
+      exports: 'default',
       globals: {
         'usertune.js': 'Usertune'
       }
     },
-    plugins: [
-      ...browserPlugins,
-      {
-        name: 'expose-usertune-class',
-        generateBundle(options, bundle) {
-          const chunk = bundle['usertune.browser.js'];
-          if (chunk && chunk.type === 'chunk') {
-            // Modify the UMD wrapper to expose Usertune class directly
-            chunk.code = chunk.code.replace(
-              /global\.Usertune = \{\}/,
-              'global.Usertune = factory().Usertune'
-            );
-          }
-        }
-      }
-    ]
+    plugins: browserPlugins
   },
 
   // Browser build (minified, with axios bundled)
   {
-    input: 'src/index.ts',
+    input: 'src/browser.ts',
     output: {
       file: 'dist/usertune.browser.min.js',
       format: 'umd',
       name: 'Usertune',
       sourcemap: true,
-      exports: 'named',
+      exports: 'default',
       globals: {
         'usertune.js': 'Usertune'
       }
     },
     plugins: [
       ...browserPlugins,
-      {
-        name: 'expose-usertune-class',
-        generateBundle(options, bundle) {
-          const chunk = bundle['usertune.browser.min.js'];
-          if (chunk && chunk.type === 'chunk') {
-            // Modify the UMD wrapper to expose Usertune class directly
-            chunk.code = chunk.code.replace(
-              /\.Usertune=\{\}/,
-              '.Usertune=factory().Usertune'
-            );
-          }
-        }
-      },
       terser({
         compress: {
           drop_console: true
